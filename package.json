@@ -1,0 +1,21 @@
+{
+  "name": "huddle",
+  "version": "0.0.1",
+  "description": "huddle",
+  "main": "server.js",
+  "repository": "",
+  "scripts": {
+    "start": "./node_modules/.bin/nodemon --ignore node_modules server.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.5.2",
+    "ejs": "~0.8.5",
+    "express": "~4.0.0",
+    "express-partials": "~0.2.0",
+    "express-session": "^1.11.2",
+    "forever": "^0.10.11",
+    "nodemon": "^1.2.1",
+    "passport": "^0.2.2",
+    "passport-slack": "0.0.1"
+  }
+}

@@ -1,4 +1,5 @@
-### node etc ###
+## secrets
+secrets/
 
 # Logs
 logs
@@ -28,8 +29,3 @@ dist/
 node_modules/
 bower_components/
 
-# Floobits
-.floo
-.floobit
-.floo
-.flooignore
