@@ -4,8 +4,10 @@
 <button>Mooooo!</button> <button>End The huddle</button></p>
 
 <video height="200" id="localVideo"></video>
-<div id="remotesVideos"></div>
 
+<table>
+<tr>
+<td>
 <div>
   <ul>
     <li ng-repeat="user in users | orderBy:'present'">
@@ -17,8 +19,9 @@
     </li>
   <ul>
 <div>
-
-<pre>
-
-</pre>
-
+</td>
+<td>
+  <div id="remotesVideos"></div>
+</td>
+</tr>
+</table>
