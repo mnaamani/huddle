@@ -145,7 +145,13 @@ angular.module('huddle', [
       .then(function(meeting){
         $location.path("/meeting/"+meeting._id);
       });
-  }
+  };
+
+  $scope.addEveryone = function(){
+    while($scope.notinvited.length) {
+      $scope.invited.push($scope.notinvited.pop());
+    }
+  };
 
 })
 .controller('MeetingController', function($scope,$routeParams, Meetings, Team){
