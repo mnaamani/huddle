@@ -1,21 +1,17 @@
-<h2>Huddle ID: {{info._id}}</h2>
-<pre>
+<h2>Huddle: {{info.title}}</h2>
+<h3>id: {{info._id}}</h3>
+<button>Mooooo!</button> <button>End The huddle</button></p>
 
-  {{ JSON.stringify(info) }}
 
-</pre>
-<div>
-  <!-- controls -->
-  <button>End The huddle</button>
-</div>
-<div>
+<div style="height: 300px;">
   <!-- video -->
 </div>
 
 <div class='team-map'>
+
   <ul>
-    <li ng-repeat="user in users">
-      <button ng-show='user.present'>
+    <li ng-repeat="user in users | orderBy:'present'">
+      <button ng-class="{faded: !user.present}">
         <img ng-src="{{user.profile.image_72}}">
         <div> {{ user.profile.first_name + " " +user.profile.last_name}} </div>
         <div> @{{ user.name }} </div> <div> {{ user.id }} </div>
@@ -24,4 +20,7 @@
   <ul>
 <div>
 
+<pre>
+
+</pre>
 

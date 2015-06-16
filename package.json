@@ -15,14 +15,15 @@
     "express-partials": "~0.2.0",
     "express-session": "^1.11.2",
     "forever": "^0.10.11",
+    "grunt": "^0.4.4",
+    "grunt-git": "^0.3.5",
+    "grunt-nodemon": "^0.2.1",
+    "grunt-shell": "^0.6.4",
     "mongoose": "^4.0.5",
     "nodemon": "^1.2.1",
     "passport": "^0.2.2",
     "passport-slack": "0.0.1",
     "slackey": "=0.5.0",
-    "grunt": "^0.4.4",
-    "grunt-shell": "^0.6.4",
-    "grunt-nodemon": "^0.2.1",
-    "grunt-git": "^0.3.5"
+    "underscore": "^1.8.3"
   }
 }

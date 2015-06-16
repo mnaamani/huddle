@@ -82,3 +82,7 @@ form {
 .team-map li:hover {
   background-color: #C2D1E0;
 }
+
+.faded {
+  opacity: 0.4;
+}

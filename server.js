@@ -6,6 +6,7 @@ var passport = require('passport');
 var Slackey = require('slackey');
 var MongoStore = require('connect-mongo')(session);
 var mongoose    = require('mongoose');
+var _ = require('underscore');
 
 var Meeting = require('./backend/meeting');
 
@@ -195,14 +196,28 @@ app.get('/api/meetings/info/:id', ensureAuthenticatedAPI, function(req, res){
   //verify that user is authorised
   //set user presence 'in meeting'
   //send back latest meeting status info
+  var userId = process.env.NODE_ENV === 'production' ? req.user.id : "U04NHL8BZ";
+  var meetingId = req.params.id;
 
-  req.params.id
-  Meeting.findOne({_id: req.params.id})
+  Meeting.findOne({_id: meetingId})
     .exec(function(err, meeting){
       if(err) {
         res.send(404);
       } else {
-        res.send(meeting)
+
+        if(!_.contains(meeting.invited, userId ) && meeting.admin !== userId ){
+          return res.send(401);//access denied
+        }
+        if(!_.contains(meeting.joined, userId)){
+          meeting.joined.push(userId);
+          meeting.save(function(err, meeting){
+            res.send(meeting);
+          });
+        } else {
+          res.send(meeting);
+        }
+
+
       }
     });
 
