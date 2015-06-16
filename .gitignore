@@ -1,6 +1,9 @@
 ## secrets
 secrets/
 
+## database
+data/
+
 # Logs
 logs
 *.log
