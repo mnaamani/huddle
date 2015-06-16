@@ -9,7 +9,7 @@
 <p>
   Invited: {{ invited.length }}
   <button ng-click="reset()"> reset </button>
-  <button ng-show="invited.length !== 0"> Huddle Up!</button>
+  <button ng-show="invited.length !== 0" ng-click="createMeeting()"> Huddle Up!</button>
 </p>
 
 <div class='team-map'>
