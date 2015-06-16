@@ -7,9 +7,22 @@ var Slackey = require('slackey');
 var MongoStore = require('connect-mongo')(session);
 
 var SlackStrategy = require('passport-slack').Strategy;
-//TODO: get these from environment vars
-var SLACK_SECRETS = require('./secrets/slack.json');
-var SESSION_SECRET = require('./secrets/session.json').secret;
+
+var SLACK_SECRETS;
+var SESSION_SECRET;
+
+if(process.env.NODE_ENV === 'production' ) {
+  SLACK_SECRETS = {
+    id: process.env.SLACK_APP_ID,
+    secret: process.env.SLACK_APP_SECRET
+  };
+  SESSION_SECRET = process.env.SESSION_SECRET;
+} else {
+
+  SLACK_SECRETS = require('./secrets/slack.json');
+  SESSION_SECRET = require('./secrets/session.json').secret;
+
+}
 
 var slackAPI = new Slackey({
   clientID: SLACK_SECRETS.id,
@@ -21,7 +34,7 @@ var app = express();
 app.use(session({
   secret: SESSION_SECRET,
   store: new MongoStore({
-    url: 'mongodb://localhost/huddle-session'
+    url: process.env.MONGODB_URL || 'mongodb://localhost/huddle'
   })
 }));
 
@@ -82,9 +95,6 @@ app.get('/logout', function(req, res){
 });
 
 function ensureAuthenticated(req, res, next) {
-  if(process.env.NODE_ENV !== 'production') {
-    //return next();
-  }
 
   if (req.isAuthenticated()) { return next(); }
 
@@ -98,6 +108,7 @@ function ensureAuthenticated(req, res, next) {
 }
 
 function ensureAuthenticatedAPI(req, res, next) {
+
   if (req.isAuthenticated()) { return next(); }
   res.status(401).end();//unauthorized
 }
@@ -148,4 +159,4 @@ app.get('/api/meetings/info/:id', ensureAuthenticatedAPI, function(req, res){
 });
 
 //start the server
-app.listen(8000);
+app.listen(process.env.PORT || 8000);
