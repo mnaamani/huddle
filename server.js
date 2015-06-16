@@ -145,6 +145,44 @@ app.get('/api/team/list', ensureAuthenticatedAPI, function(req, res){
 });
 
 //meeting api
+function sendInvites(users, meetingId, channelId) {
+  //for now send a message to a channel (in future send DMs to individual users)
+  //channel id
+  //user name array
+  //url to meeting
+  //title
+
+  var token = process.env.NODE_ENV === 'production' ? req.user.slackAccessToken : SLACK_SECRETS.token;
+  var slack = slackAPI.getClient(token);
+
+  slack.api('users.list', function(err, response) {
+    if (err) {
+      res.status(500);
+    } else {
+
+      var names = response.members.filter(function(user){
+        return _.contains(users, user.id);
+      }).map(function(user){
+        return "@"+user.name;
+      }).join(" ");
+
+      message = names + " Huddle Up! >> http://huddleup.azurewebsites.net/#/meeting/"+meetingId;
+/*
+      slack.api('chat.postMessage', {
+          channel: 'C04GY38CA', //HRR6 channel
+          text: message,
+          as_user: true,
+          link_names: true,
+          //parse: 'full'
+      },function(){
+        console.log("invites sent");
+      });
+*/
+      console.log('sending invite message:', message);
+    }
+  });
+}
+
 app.post('/api/meetings/new', ensureAuthenticatedAPI, function(req, res){
   console.log('creating new meeting for:', req.body)
 
@@ -162,7 +200,7 @@ app.post('/api/meetings/new', ensureAuthenticatedAPI, function(req, res){
       res.send(500);
     } else {
 
-      //TODO: send out invites
+      sendInvites(req.body.invited, huddle._id);
       res.send(201, huddle);
     }
   });
