@@ -5,7 +5,7 @@
   "main": "server.js",
   "repository": "",
   "scripts": {
-    "start": "./node_modules/.bin/nodemon --ignore node_modules server.js"
+    "start": "./node_modules/.bin/nodemon --ignore node_modules --ignore public --ignore views server.js"
   },
   "dependencies": {
     "body-parser": "^1.5.2",
