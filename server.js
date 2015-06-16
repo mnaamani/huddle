@@ -3,10 +3,17 @@ var partials = require('express-partials');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var passport = require('passport');
+var Slackey = require('slackey');
 
 var SlackStrategy = require('passport-slack').Strategy;
+//TODO: get these from environment vars
 var SLACK_SECRETS = require('./secrets/slack.json');
 var SESSION_SECRET = require('./secrets/session.json').secret;
+
+var slackAPI = new Slackey({
+  clientID: SLACK_SECRETS.id,
+  clientSecret: SLACK_SECRETS.secret
+});
 
 var app = express();
 
@@ -22,26 +29,16 @@ passport.deserializeUser(function(obj, done) {
   done(null, obj);
 });
 
-
 passport.use(new SlackStrategy({
     clientID: SLACK_SECRETS.id,
-    clientSecret: SLACK_SECRETS.secret,
-    //callbackURL: "http://localhost:8000/auth/slack/callback"
+    clientSecret: SLACK_SECRETS.secret
   },
   function(accessToken, refreshToken, profile, done) {
-    // asynchronous verification, for effect...
-    process.nextTick(function () {
-      /*
-      User.findOrCreate({ SlackId: profile.id }, function (err, user) {
-        return done(err, user);
-      });
-      */
-      console.log(profile);
-      //console.log("access token:", accessToken);
-      return done(null, profile);
-    });
+    profile.slackAccessToken = accessToken;
+    return done(null, profile);
   }
 ));
+
 
 
 app.set('views', __dirname + '/views');
@@ -57,7 +54,7 @@ app.use(passport.session());
 app.use(express.static(__dirname + '/public'));
 
 app.get('/', ensureAuthenticated, function(req, res) {
-  res.render('index', {user:JSON.stringify(req.user)});
+  res.render('index');
 });
 
 app.get('/login', function(req, res){
@@ -70,7 +67,7 @@ app.get('/auth/slack',
 app.get('/auth/slack/callback',
   passport.authenticate('slack', { failureRedirect: '/login' }),
   function(req, res) {
-    res.redirect('/');
+    res.redirect('/');//TODO: send them to a meeting if they were trying to join one
 });
 
 app.get('/logout', function(req, res){
@@ -81,14 +78,42 @@ app.get('/logout', function(req, res){
 });
 
 function ensureAuthenticated(req, res, next) {
+  if(process.env.NODE_ENV !== 'production') {
+    //return next();
+  }
+
   if (req.isAuthenticated()) { return next(); }
 
   if(req.method === 'GET') {
-    res.redirect('/login')
+    //TODO remember if user was trying to join a specific meeting, to send them to
+    //it when they authenticate successfully
+    res.redirect('/login');
   } else{
     res.status(401).end();//unauthorized
   }
 }
 
+function ensureAuthenticatedAPI(req, res, next) {
+  if (req.isAuthenticated()) { return next(); }
+  res.status(401).end();//unauthorized
+}
+
+app.get('/api/whoami', ensureAuthenticatedAPI, function(req, res){
+  response.send(200, req.user);
+});
+
+//proxying api to slack
+app.get('/api/team/list', ensureAuthenticatedAPI, function(req, res){
+
+  var slack = slackAPI.getClient(req.user.slackAccessToken);
+
+  slack.api('users.list', function(err, response) {
+    if (err) {
+      res.status(500);
+    } else {
+      res.send(200, response.members);
+    }
+  });
+});
 
 app.listen(8000);
