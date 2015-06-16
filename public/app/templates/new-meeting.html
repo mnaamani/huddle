@@ -1,7 +1,46 @@
+<p>
+  <span ng-show="invited.length == 0">Click on a team member to add them to the huddle</span>
+</p>
 
-<span>Enter Meeting Information</span>
-<span>Invitees will be selected in next step</span>
-<form>
-<input type='text' placeholder='Title'>
-<button>create</button>
-</form>
+<p>
+  Search: <input type="text" placeholder="filter" ng-model="search"><button ng-click="search=''">x</button>
+</p>
+
+<p>
+  Invited: {{ invited.length }}
+  <button ng-click="reset()"> reset </button>
+  <button ng-show="invited.length !== 0"> Huddle Up!</button>
+</p>
+
+<div class='team-map'>
+  <ul>
+    <li ng-repeat="user in invited | filter:search">
+      <button ng-click="uninvite(user.id)">
+        <img ng-src="{{user.profile.image_72}}">
+        <div> {{ user.profile.first_name + " " +user.profile.last_name}} </div>
+        <div> @{{ user.name }} </div> <div> {{ user.id }} </div>
+      </button>
+    </li>
+  <ul>
+<div>
+
+<div style='clear:both'/>
+<hr/>
+<p>Not Invited: {{ notinvited.length }}</p>
+
+<div class='team-map'>
+  <ul>
+    <li ng-repeat="user in notinvited | filter:search">
+      <button ng-click="invite(user.id)">
+        <img ng-src="{{user.profile.image_72}}">
+        <div> {{ user.profile.first_name + " " +user.profile.last_name}} </div>
+        <div> @{{ user.name }} </div> <div> {{ user.id }} </div>
+      </button>
+    </li>
+  <ul>
+<div>
+
+
+
+
+

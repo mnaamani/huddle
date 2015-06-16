@@ -68,10 +68,6 @@ form {
   margin: 0 10px;
 }
 
-.team-map {
-  width: 100%;
-}
-
 .team-map ul {
   margin: 0;
   padding: 0;
@@ -79,7 +75,6 @@ form {
 }
 
 .team-map li {
-  width:200px;
   padding: 0;
   float: left;
 }

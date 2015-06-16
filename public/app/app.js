@@ -54,4 +54,53 @@ angular.module('huddle', [
     $scope.team = data;
   });
 
+})
+.controller('NewMeetingController', function($scope, Team){
+  $scope.notinvited = [];
+  $scope.invited = [];
+
+  Team.info().then(function(data){
+    $scope.notinvited = data.slice();
+  });
+
+  $scope.reset = function(){
+    $scope.search = '';
+    $scope.invited.forEach(function(value){
+      $scope.notinvited.push(value);
+    });
+    $scope.invited.length = 0;
+  };
+
+  $scope.invite = function(id) {
+    $scope.search = '';
+    var ix = _.findIndex($scope.notinvited, function(user){
+      return user.id === id;
+    });
+    var user = $scope.notinvited.splice(ix,1)[0];
+    $scope.invited.push(user);
+  }
+
+  $scope.uninvite = function(id) {
+    $scope.search = '';
+    var ix = _.findIndex($scope.invited, function(user){
+      return user.id === id;
+    });
+    var user = $scope.invited.splice(ix,1)[0];
+    $scope.notinvited.push(user);
+  }
+
+})
+.factory('NewMeeting', function() {
+
+
+
+})
+.controller('MeetingController', function($scope){
+
+})
+.controller('HomeController', function($scope){
+
+})
+.controller('GroupsController', function($scope){
+
 });

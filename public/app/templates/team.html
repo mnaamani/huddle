@@ -5,19 +5,9 @@
 <div class='team-map'>
   <ul>
     <li ng-repeat="user in team | filter:search">
-      <a>
-      <table>
-        <tr>
-          <td>
-            <img ng-src="{{user.profile.image_72}}">
-          </td>
-          <td>
-            <div> {{ user.profile.first_name + " " +user.profile.last_name}} </div>
-            <div> @{{ user.name }} </div>
-          </td>
-        </tr>
-      </table>
-      </a>
+      <img ng-src="{{user.profile.image_192}}">
+      <div> {{ user.profile.first_name + " " +user.profile.last_name}} </div>
+      <div> @{{ user.name }} </div>
     </li>
   <ul>
 <div>
