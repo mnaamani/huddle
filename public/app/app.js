@@ -27,6 +27,7 @@ angular.module('huddle', [
     .otherwise({redirectTo: '/'});
 })
 .factory('Team', function($http, $q){
+  var cache;
 
   function info(){
     return $http({
@@ -34,7 +35,7 @@ angular.module('huddle', [
       url: '/api/team/list',
       cache: true
     }).then(function(response){
-
+      cache = response.data;
       return response.data;
 
     }).catch(function(err){
@@ -42,8 +43,15 @@ angular.module('huddle', [
     });
   }
 
+  function userInfo(id){
+    return _.find(cache, function(user){
+      return user.id === id;
+    });
+  };
+
   return {
-    info: info
+    info: info,
+    userInfo: userInfo
   };
 
 })
@@ -78,9 +86,20 @@ angular.module('huddle', [
     });
   }
 
+  //call continuously to get updated meeting information
+  var meetingInfo = function(id){
+    return $http({
+      method: 'GET',
+      url: '/api/meetings/info/'+id,
+    }).then(function(response){
+      return response.data;
+    });
+  }
+
   return {
     create: create,
-    list: list
+    list: list,
+    info: meetingInfo
   };
 
 })
@@ -129,7 +148,43 @@ angular.module('huddle', [
   }
 
 })
-.controller('MeetingController', function($scope){
+.controller('MeetingController', function($scope,$routeParams, Meetings, Team){
+  $scope.info = {};
+
+  $scope.users = [];
+
+  $scope.meetingId = $routeParams.id;
+
+  var updateInterval;
+
+  Meetings.info($scope.meetingId).then(function(info){
+    Team.info().then(function(){
+      info.invited.forEach(function(id){
+        var user = Team.userInfo(id);
+        if(user) {
+          $scope.users.push(user);
+        }
+      });
+
+      updateInterval = setInterval(refresh, 5000);
+      refresh();
+    });
+  });
+
+  function refresh(){
+    Meetings.info($scope.meetingId).then(function(info){
+      $scope.info = info;
+      $scope.users.forEach(function(user){
+        if(_.contains(info.joined, user.id )){
+          user.present = true;
+        }
+      });
+    });
+  }
+
+  $scope.$on("$destroy", function(){
+    clearInterval(updateInterval);
+  });
 
 })
 .controller('HomeController', function($scope, Meetings){

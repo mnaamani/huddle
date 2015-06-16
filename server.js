@@ -168,7 +168,6 @@ app.post('/api/meetings/new', ensureAuthenticatedAPI, function(req, res){
 
 });
 
-//meeting api
 app.get('/api/meetings/list', ensureAuthenticatedAPI, function(req, res){
 
   var userId = process.env.NODE_ENV === 'production' ? req.user.id : "U04NHL8BZ";
@@ -196,9 +195,17 @@ app.get('/api/meetings/info/:id', ensureAuthenticatedAPI, function(req, res){
   //verify that user is authorised
   //set user presence 'in meeting'
   //send back latest meeting status info
-  res.send(200,{
-    data: 123
-  });
+
+  req.params.id
+  Meeting.findOne({_id: req.params.id})
+    .exec(function(err, meeting){
+      if(err) {
+        res.send(404);
+      } else {
+        res.send(meeting)
+      }
+    });
+
 });
 
 //start the server

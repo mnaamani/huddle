@@ -1,7 +1,27 @@
-<h2>Meeting ID: 6129</h2>
-
+<h2>Huddle ID: {{info._id}}</h2>
 <pre>
-  Invite users
-  See status of invitees
-  -- controls on the left
+
+  {{ JSON.stringify(info) }}
+
 </pre>
+<div>
+  <!-- controls -->
+  <button>End The huddle</button>
+</div>
+<div>
+  <!-- video -->
+</div>
+
+<div class='team-map'>
+  <ul>
+    <li ng-repeat="user in users">
+      <button ng-show='user.present'>
+        <img ng-src="{{user.profile.image_72}}">
+        <div> {{ user.profile.first_name + " " +user.profile.last_name}} </div>
+        <div> @{{ user.name }} </div> <div> {{ user.id }} </div>
+      </button>
+    </li>
+  <ul>
+<div>
+
+
