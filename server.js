@@ -5,6 +5,11 @@ var session = require('express-session');
 var passport = require('passport');
 var Slackey = require('slackey');
 var MongoStore = require('connect-mongo')(session);
+var mongoose    = require('mongoose');
+
+var Meeting = require('./backend/meeting');
+
+mongoose.connect(process.env.MONGODB_URL || 'mongodb://localhost/huddle');
 
 var SlackStrategy = require('passport-slack').Strategy;
 
@@ -95,6 +100,9 @@ app.get('/logout', function(req, res){
 });
 
 function ensureAuthenticated(req, res, next) {
+  if(process.env.NODE_ENV !== 'production'){
+    return next();
+  }
 
   if (req.isAuthenticated()) { return next(); }
 
@@ -108,6 +116,9 @@ function ensureAuthenticated(req, res, next) {
 }
 
 function ensureAuthenticatedAPI(req, res, next) {
+  if(process.env.NODE_ENV !== 'production'){
+    return next();
+  }
 
   if (req.isAuthenticated()) { return next(); }
   res.status(401).end();//unauthorized
@@ -120,7 +131,8 @@ app.get('/api/whoami', ensureAuthenticatedAPI, function(req, res){
 //proxying api calls to slack
 app.get('/api/team/list', ensureAuthenticatedAPI, function(req, res){
 
-  var slack = slackAPI.getClient(req.user.slackAccessToken);
+  var token = process.env.NODE_ENV === 'production' ? req.user.slackAccessToken : SLACK_SECRETS.token;
+  var slack = slackAPI.getClient(token);
 
   slack.api('users.list', function(err, response) {
     if (err) {
@@ -134,11 +146,42 @@ app.get('/api/team/list', ensureAuthenticatedAPI, function(req, res){
 //meeting api
 app.post('/api/meetings/new', ensureAuthenticatedAPI, function(req, res){
   console.log('creating new meeting for:', req.body)
-  //send out invites
 
-  res.send(201,{
-    id: '77777'
+  //todo make sure to include creator in invited array
+  var userId = process.env.NODE_ENV === 'production' ? req.user.id : "U04NHL8BZ";
+
+  Meeting.create({
+    title: req.body.title,
+    admin: userId,
+    invited: req.body.invited,
+    ended: false
+  }, function(err, huddle) {
+    if(err) {
+      console.log(err);
+      res.send(500);
+    } else {
+
+      //TODO: send out invites
+      res.send(201, huddle);
+    }
   });
+
+});
+
+//meeting api
+app.get('/api/meetings/list', ensureAuthenticatedAPI, function(req, res){
+
+  var userId = process.env.NODE_ENV === 'production' ? req.user.id : "U04NHL8BZ";
+
+  Meeting.find({'invited': userId })
+    .exec(function(err, results) {
+      if(err) {
+        res.send(500);
+      } else {
+        res.send(200, results);
+      }
+    });
+
 });
 
 app.post('/api/meetings/control/:id', ensureAuthenticatedAPI, function(req, res){

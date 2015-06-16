@@ -1,9 +1,7 @@
 <p>
-  <span ng-show="invited.length == 0">Click on a team member to add them to the huddle</span>
-</p>
-
-<p>
-  Search: <input type="text" placeholder="filter" ng-model="search"><button ng-click="search=''">x</button>
+  <span>Give your huddle a title:</span>
+  <br/>
+  <input type='text' placeholder='Title' ng-model='title'>
 </p>
 
 <p>
@@ -26,7 +24,11 @@
 
 <div style='clear:both'/>
 <hr/>
-<p>Not Invited: {{ notinvited.length }}</p>
+<p>Click on a person to invite them. ({{ notinvited.length }})</p>
+
+<p>
+  Search: <input type="text" placeholder="filter" ng-model="search"><button ng-click="search=''">x</button>
+</p>
 
 <div class='team-map'>
   <ul>

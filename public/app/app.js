@@ -55,9 +55,9 @@ angular.module('huddle', [
   });
 
 })
-.factory('NewMeeting', function($http) {
+.factory('Meetings', function($http) {
 
-  var start = function(users){
+  var create = function(users){
     return $http({
       method: 'POST',
       url: '/api/meetings/new',
@@ -68,12 +68,23 @@ angular.module('huddle', [
     });
   }
 
+  var list = function(){
+    return $http({
+      method: 'GET',
+      url: '/api/meetings/list'
+    }).then(function(response){
+      console.log('got list of huddles', response.data);
+      return response.data;
+    });
+  }
+
   return {
-    start: start
+    create: create,
+    list: list
   };
 
 })
-.controller('NewMeetingController', function($scope, $location, Team, NewMeeting){
+.controller('NewMeetingController', function($scope, $location, Team, Meetings){
   $scope.notinvited = [];
   $scope.invited = [];
 
@@ -108,9 +119,12 @@ angular.module('huddle', [
   };
 
   $scope.createMeeting = function(){
-    NewMeeting.start(_.pluck($scope.invited,"id"))
+    Meetings.create({
+      title: $scope.title,
+      invited: _.pluck($scope.invited,"id")
+    })
       .then(function(meeting){
-        $location.path("/meeting/"+meeting.id);
+        $location.path("/meeting/"+meeting._id);
       });
   }
 
@@ -118,7 +132,13 @@ angular.module('huddle', [
 .controller('MeetingController', function($scope){
 
 })
-.controller('HomeController', function($scope){
+.controller('HomeController', function($scope, Meetings){
+  //show all Meetings
+  $scope.huddles = [];
+
+  Meetings.list().then(function(huddles){
+    $scope.huddles = huddles;
+  });
 
 })
 .controller('GroupsController', function($scope){
