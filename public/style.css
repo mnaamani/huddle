@@ -67,3 +67,23 @@ form {
   padding: 10px;
   margin: 0 10px;
 }
+
+.team-map {
+  width: 100%;
+}
+
+.team-map ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.team-map li {
+  width:200px;
+  padding: 0;
+  float: left;
+}
+
+.team-map li:hover {
+  background-color: #C2D1E0;
+}

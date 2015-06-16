@@ -1,7 +1,23 @@
-Slack Team Info
+<h2>Team Info</h2>
 
-<ul>
-  <li ng-repeat="user in team">
-  id: {{ user.id}}  name: {{ user.name }}
-  </li>
-</ul>
+<input type='text' placeholder='search' ng-model='search'>
+
+<div class='team-map'>
+  <ul>
+    <li ng-repeat="user in team | filter:search">
+      <a>
+      <table>
+        <tr>
+          <td>
+            <img ng-src="{{user.profile.image_72}}">
+          </td>
+          <td>
+            <div> {{ user.profile.first_name + " " +user.profile.last_name}} </div>
+            <div> @{{ user.name }} </div>
+          </td>
+        </tr>
+      </table>
+      </a>
+    </li>
+  <ul>
+<div>
