@@ -90,7 +90,11 @@ app.get('/auth/slack',
 app.get('/auth/slack/callback',
   passport.authenticate('slack', { failureRedirect: '/login' }),
   function(req, res) {
-    res.redirect('/');//TODO: send them to a meeting if they were trying to join one
+    if(req.session._join_meeting){
+      res.redirect('/join/'+req.session._join_meeting);
+    }else {
+      res.redirect('/');
+    }
 });
 
 app.get('/logout', function(req, res){
@@ -98,6 +102,15 @@ app.get('/logout', function(req, res){
   req.session.destroy(function(){
     res.redirect('/login');
   });
+});
+
+app.get('/join/:id', function(req, res){
+  if(req.isAuthenticated()){
+    res.redirect("/#/meeting/"+req.params.id);
+  } else{
+    req.session._join_meeting = req.params.id;
+    res.redirect('/login');
+  }
 });
 
 function ensureAuthenticated(req, res, next) {
