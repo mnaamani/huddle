@@ -258,8 +258,7 @@ app.get('/api/meetings/info/:id', ensureAuthenticatedAPI, function(req, res){
 
         if(!_.contains(meeting.invited, userId ) && meeting.admin !== userId ){
           return res.send(401);//access denied
-        }
-        if(!_.contains(meeting.joined, userId)){
+        } else if(!_.contains(meeting.joined, userId)){
           meeting.joined.push(userId);
           meeting.save(function(err, meeting){
             res.send(meeting);
