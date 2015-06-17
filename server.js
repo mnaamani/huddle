@@ -170,28 +170,29 @@ function sendInvites(users, meetingId, channelId) {
 
   slack.api('users.list', function(err, response) {
     if (err) {
-      res.status(500);
-    } else {
-
-      var names = response.members.filter(function(user){
-        return _.contains(users, user.id);
-      }).map(function(user){
-        return "@"+user.name;
-      }).join(" ");
-
-      message = "Huddle Up! >> http://huddleup.azurewebsites.net/#/meeting/"+meetingId+" "+names;
-
-      slack.api('chat.postMessage', {
-          channel: 'C04GY38CA', //HRR6 channel
-          text: message,
-          as_user: true,
-          link_names: true,
-          //parse: 'full'
-      },function(){
-        console.log("invites sent");
-      });
-        console.log('sending invite message:', message);
+      return;
     }
+
+    var names = response.members.filter(function(user){
+      return _.contains(users, user.id);
+    }).map(function(user){
+      return "@"+user.name;
+    }).join(" ");
+
+    message = "Huddle Up! >> http://huddleup.azurewebsites.net/#/meeting/"+meetingId+" "+names;
+
+    slack.api('chat.postMessage', {
+        channel: 'C04GY38CA', //HRR6 channel
+        text: message,
+        as_user: true,
+        link_names: true,
+        //parse: 'full'
+    },function(){
+      console.log("invites sent");
+    });
+
+    console.log('sending invite message:', message);
+
   });
 }
 
