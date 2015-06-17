@@ -86,3 +86,13 @@ form {
 .faded {
   opacity: 0.4;
 }
+
+.team-list ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.team-list li {
+  padding: 0;
+}

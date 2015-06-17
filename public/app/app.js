@@ -157,6 +157,8 @@ angular.module('huddle', [
 .controller('MeetingController', function($scope,$routeParams, Meetings, Team){
   $scope.info = {};
 
+  $scope.status = "joining meeting...";
+
   $scope.users = [];
 
   $scope.meetingId = $routeParams.id;
@@ -164,6 +166,8 @@ angular.module('huddle', [
   var updateInterval;
 
   Meetings.info($scope.meetingId).then(function(info){
+    $scope.status = "";
+    $scope.info = info;
     Team.info().then(function(){
       info.invited.forEach(function(id){
         var user = Team.userInfo(id);
@@ -192,6 +196,9 @@ angular.module('huddle', [
       });
 
     });
+  }).catch(function(err){
+    console.log(err);
+    $scope.status = "There was an error joining the meeting...";
   });
 
   function refresh(){
