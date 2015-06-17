@@ -158,7 +158,7 @@ app.get('/api/team/list', ensureAuthenticatedAPI, function(req, res){
 });
 
 //meeting api
-function sendInvites(users, meetingId, channelId) {
+function sendInvites(req, users, meetingId, channelId) {
   //for now send a message to a channel (in future send DMs to individual users)
   //channel id
   //user name array
@@ -213,7 +213,7 @@ app.post('/api/meetings/new', ensureAuthenticatedAPI, function(req, res){
       res.send(500);
     } else {
 
-      sendInvites(req.body.invited, huddle._id);
+      sendInvites(req, req.body.invited, huddle._id);
       res.send(201, huddle);
     }
   });
