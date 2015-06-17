@@ -179,8 +179,8 @@ function sendInvites(users, meetingId, channelId) {
         return "@"+user.name;
       }).join(" ");
 
-      message = names + " Huddle Up! >> http://huddleup.azurewebsites.net/#/meeting/"+meetingId;
-/*
+      message = "Huddle Up! >> http://huddleup.azurewebsites.net/#/meeting/"+meetingId+" "+names;
+
       slack.api('chat.postMessage', {
           channel: 'C04GY38CA', //HRR6 channel
           text: message,
@@ -190,8 +190,7 @@ function sendInvites(users, meetingId, channelId) {
       },function(){
         console.log("invites sent");
       });
-*/
-      console.log('sending invite message:', message);
+        console.log('sending invite message:', message);
     }
   });
 }
