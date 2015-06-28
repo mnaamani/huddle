@@ -187,7 +187,9 @@ angular.module('huddle', [
         // immediately ask for camera access
         autoRequestMedia: true,
         //socket.io signalling server
-        signaling: 'http://www.mokhtar.net:8877'
+        signaling: 'http://www.mokhtar.net:8877',
+
+        stunUrl: 'stun:www.mokhtar.net:3478'
       });
 
       // we have to wait until it's ready
