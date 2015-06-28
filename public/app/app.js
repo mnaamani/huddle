@@ -185,9 +185,10 @@ angular.module('huddle', [
         // the id/element dom element that will hold remote videos
         remoteVideosEl: 'remotesVideos',
         // immediately ask for camera access
-        autoRequestMedia: true
+        autoRequestMedia: true,
+        //socket.io signalling server
+        signaling: 'http://www.mokhtar.net:8877'
       });
-
 
       // we have to wait until it's ready
       webrtc.on('readyToCall', function () {
