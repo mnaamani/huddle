@@ -213,7 +213,7 @@ app.post('/api/meetings/new', ensureAuthenticatedAPI, function(req, res){
       res.send(500);
     } else {
 
-      sendInvites(req, req.body.invited, huddle._id);
+      //sendInvites(req, req.body.invited, huddle._id);
       res.send(201, huddle);
     }
   });
