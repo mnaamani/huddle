@@ -279,6 +279,7 @@ angular.module('huddle', [
       webrtc.leaveRoom();
       webrtc.disconnect();
     }
+    $scope.users = [];
   });
 })
 .directive("remoteSession", function(){
