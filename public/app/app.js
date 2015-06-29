@@ -307,8 +307,7 @@ angular.module('huddle', [
     });
 
     element.on('$destroy', function() {
-      //todo: remove video element
-      console.log('directive destroyed')
+      
     });
   }
 

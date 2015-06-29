@@ -1,13 +1,10 @@
 <h2>{{status}}</h2>
 
 <div ng-show='info._id'>
+  <!--
   <h3>Huddle: {{info.title}} - id: {{info._id}}</h3>
   <button>Mooooo!</button> <button>Thumbs Check</button> <button>End The huddle</button></p>
-  <button ng-click="muteAudio()">Mute Audio</button>
-  <button ng-click="unmuteAudio()">Unmute Audio</button>
-  <button ng-click="pauseVideo()">Pause Video</button>
-  <button ng-click="resumeVideo()">Resume Video</button>
-
+  -->
   <div class='team-map'>
     <ul>
       <li ng-repeat="user in users | orderBy:'present'">
@@ -21,6 +18,11 @@
 
   <div class="container">
     <div class="videoContainer">
+      <button class="mute" ng-show="!muted" ng-click="muteAudio()">Mute Audio</button>
+      <button class="mute" ng-show="muted" ng-click="unmuteAudio()">Unmute Audio</button>
+      <button class="pause" ng-show="!paused" ng-click="pauseVideo()">Pause Video</button>
+      <button class="pause" ng-show="paused" ng-click="resumeVideo()">Resume Video</button>
+
       <video ng-show="!paused" id="localVideo"></video>
       <meter class="volume" min="-100" max="-20" low="-70" high="-25" volume="localVolume"></meter>
       <span class="muted" ng-show="muted">[muted]</span>
