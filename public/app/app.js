@@ -235,6 +235,22 @@ angular.module('huddle', [
           $scope.remoteSessions[ix].volume = volume;
         }
       });
+      $scope.muteAudio = function(){
+        webrtc.mute();
+        $scope.muted = true;
+      };
+      $scope.unmuteAudio = function(){
+        webrtc.unmute();
+        $scope.muted = false;
+      };
+      $scope.pauseVideo = function(){
+        webrtc.pauseVideo();
+        $scope.paused = true;
+      };
+      $scope.resumeVideo = function(){
+        webrtc.resumeVideo();
+        $scope.paused = false;
+      };
     });
   }).catch(function(err){
     console.log(err);

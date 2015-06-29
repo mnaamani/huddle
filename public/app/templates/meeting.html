@@ -3,7 +3,10 @@
 <div ng-show='info._id'>
   <h3>Huddle: {{info.title}} - id: {{info._id}}</h3>
   <button>Mooooo!</button> <button>Thumbs Check</button> <button>End The huddle</button></p>
-
+  <button ng-click="muteAudio()">Mute Audio</button>
+  <button ng-click="unmuteAudio()">Unmute Audio</button>
+  <button ng-click="pauseVideo()">Pause Video</button>
+  <button ng-click="resumeVideo()">Resume Video</button>
 
   <div class='team-map'>
     <ul>
@@ -18,11 +21,15 @@
 
   <div class="container">
     <div class="videoContainer">
-      <video height="200" id="localVideo"></video>
-      <meter class="volume" min="-100" max="-20" low="-70" high="-25" volume="localVolume">
+      <video ng-show="!paused" height="200px" id="localVideo"></video>
+      <meter class="volume" min="-100" max="-20" low="-70" high="-25" volume="localVolume"></meter>
+      <span class="muted" ng-show="muted">[muted]</span>
+      <span class="paused" ng-show="paused">[paused]</span>
     </div>
     <div class="videoContainer" ng-repeat="remote in remoteSessions" remote-session="remote">
-      <meter class="volume" min="-100" max="-20" low="-70" high="-25" volume="remote.volume">
+      <meter class="volume" min="-100" max="-20" low="-70" high="-25" volume="remote.volume"/></meter>
+      <span class="muted" ng-show="remote.muted"></span>
+      <span class="paused" ng-show="remote.paused"></span>
     </div>
   </div>
 
