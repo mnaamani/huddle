@@ -17,9 +17,8 @@
   </div>
 
   <div class="container">
-    <video height="200" id="localVideo"></video>
-
-    <div id="remotesVideos"></div>
+    <div class="videoContainer"><video height="200" id="localVideo"></video></div>
+    <div class="videoContainer" ng-repeat="remote in remoteSessions" remote-session="remote"></div>
   </div>
 
 </div>

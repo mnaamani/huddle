@@ -168,6 +168,8 @@ angular.module('huddle', [
   Meetings.info($scope.meetingId).then(function(info){
     $scope.status = "";
     $scope.info = info;
+    $scope.remoteSessions = [];
+
     Team.info().then(function(){
       info.invited.forEach(function(id){
         var user = Team.userInfo(id);
@@ -183,7 +185,7 @@ angular.module('huddle', [
         // the id/element dom element that will hold "our" video
         localVideoEl: 'localVideo',
         // the id/element dom element that will hold remote videos
-        remoteVideosEl: 'remotesVideos',
+        remoteVideosEl: '',
         // immediately ask for camera access
         autoRequestMedia: true,
         //socket.io signalling server
@@ -198,6 +200,27 @@ angular.module('huddle', [
       webrtc.on('readyToCall', function () {
         // you can name it anything
         webrtc.joinRoom("huddle"+$scope.meetingId);
+      });
+
+      webrtc.on('videoAdded', function (video, peer) {
+          // suppress contextmenu
+          //video.oncontextmenu = function () { return false; };
+
+          $scope.remoteSessions.push({
+            id:webrtc.getDomId(peer),
+            video: video,
+            peer: peer
+          });
+      });
+
+      webrtc.on('videoRemoved', function (video, peer) {
+          var id = webrtc.getDomId(peer);
+          var ix = _.findIndex($scope.remoteSessions, function(session){
+            return session.id === id;
+          });
+          if(ix !== -1){
+            $scope.remoteSessions.splice(ix, 1);
+          }
       });
 
     });
@@ -220,6 +243,27 @@ angular.module('huddle', [
   $scope.$on("$destroy", function(){
     clearInterval(updateInterval);
   });
+})
+.directive("remoteSession", function(){
+
+  function link(scope, element, attrs) {
+    var session;
+    scope.$watch(attrs.remoteSession, function(value) {
+      console.log('directive remoteSession attribute value updated', value.id);
+      session = value;
+      element.append(session.video);
+    });
+
+    element.on('$destroy', function() {
+      //todo: remove video element
+      console.log('directive destroyed')
+    });
+  }
+
+  return {
+    link:link
+  };
+
 })
 .controller('HomeController', function($scope, Meetings){
   //show all Meetings
