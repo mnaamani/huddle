@@ -204,8 +204,7 @@ angular.module('huddle', [
 
       webrtc.on('videoAdded', function (video, peer) {
           // suppress contextmenu
-          //video.oncontextmenu = function () { return false; };
-
+          video.oncontextmenu = function () { return false; };
           $scope.remoteSessions.push({
             id:webrtc.getDomId(peer),
             video: video,
@@ -249,9 +248,34 @@ angular.module('huddle', [
   function link(scope, element, attrs) {
     var session;
     scope.$watch(attrs.remoteSession, function(value) {
-      console.log('directive remoteSession attribute value updated', value.id);
       session = value;
       element.append(session.video);
+
+      if(session.peer && session.peer.pc){
+        var state = angular.element('<div>').addClass('connectionstate');
+        element.append(state);
+        session.peer.pc.on('iceConnectionStateChange', function (event) {
+            switch (session.peer.pc.iceConnectionState) {
+            case 'checking':
+                state.text('Connecting to peer...');
+                break;
+            case 'connected':
+            case 'completed': // on caller side
+                state.text('Connection established.');
+                break;
+            case 'disconnected':
+                state.text('Disconnected.');
+                break;
+            case 'failed':
+                break;
+            case 'closed':
+                state.text('Connection closed.');
+                break;
+            }
+        });
+
+      }
+
     });
 
     element.on('$destroy', function() {
