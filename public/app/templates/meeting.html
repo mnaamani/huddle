@@ -4,10 +4,8 @@
   <h3>Huddle: {{info.title}} - id: {{info._id}}</h3>
   <button>Mooooo!</button> <button>Thumbs Check</button> <button>End The huddle</button></p>
 
-  <table>
-  <tr>
-  <td valign="top">
-  <div class='team-list'>
+
+  <div class='team-map'>
     <ul>
       <li ng-repeat="user in users | orderBy:'present'">
         <button ng-class="{faded: !user.present}">
@@ -18,12 +16,10 @@
     <ul>
   </div>
 
-  </td>
-  <td valign="top">
-    <video height="200" id="localVideo" style="float:left"></video>
-    <div id="remotesVideos" style="float:left"></div>
-  </td>
-  </tr>
-  </table>
+  <div class="container">
+    <video height="200" id="localVideo"></video>
+
+    <div id="remotesVideos"></div>
+  </div>
 
 </div>

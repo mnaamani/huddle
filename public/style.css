@@ -52,7 +52,7 @@ h1 {
   background-color: #ccc;
 }
 
-#container {
+.container {
   clear: both;
   margin-top: 10px;
 }
