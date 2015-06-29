@@ -164,6 +164,7 @@ angular.module('huddle', [
   $scope.meetingId = $routeParams.id;
 
   var updateInterval;
+  var webrtc;
 
   Meetings.info($scope.meetingId).then(function(info){
     $scope.status = "";
@@ -181,7 +182,7 @@ angular.module('huddle', [
       updateInterval = setInterval(refresh, 5000);
       refresh();
 
-      var webrtc = new SimpleWebRTC({
+      webrtc = new SimpleWebRTC({
         // the id/element dom element that will hold "our" video
         localVideoEl: 'localVideo',
         // the id/element dom element that will hold remote videos
@@ -270,6 +271,11 @@ angular.module('huddle', [
 
   $scope.$on("$destroy", function(){
     clearInterval(updateInterval);
+    if(webrtc) {
+      webrtc.stopLocalVideo();
+      webrtc.leaveRoom();
+      webrtc.disconnect();
+    }
   });
 })
 .directive("remoteSession", function(){
@@ -307,7 +313,7 @@ angular.module('huddle', [
     });
 
     element.on('$destroy', function() {
-      
+
     });
   }
 
