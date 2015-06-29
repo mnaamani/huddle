@@ -225,6 +225,16 @@ angular.module('huddle', [
       webrtc.on("volumeChange", function(volume, threshold){
         $scope.localVolume = volume;
       });
+
+      webrtc.on('remoteVolumeChange', function (peer, volume) {
+        var id = webrtc.getDomId(peer);
+        var ix = _.findIndex($scope.remoteSessions, function(session){
+          return session.id === id;
+        });
+        if(ix !== -1){
+          $scope.remoteSessions[ix].volume = volume;
+        }
+      });
     });
   }).catch(function(err){
     console.log(err);
