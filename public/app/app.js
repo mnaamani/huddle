@@ -222,6 +222,9 @@ angular.module('huddle', [
           }
       });
 
+      webrtc.on("volumeChange", function(volume, threshold){
+        $scope.localVolume = volume;
+      });
     });
   }).catch(function(err){
     console.log(err);
@@ -273,7 +276,6 @@ angular.module('huddle', [
                 break;
             }
         });
-
       }
 
     });
@@ -288,6 +290,20 @@ angular.module('huddle', [
     link:link
   };
 
+})
+.directive("volume", function(){
+
+  function link(scope, element, attrs){
+    scope.$watch(attrs.volume, function(value) {
+      if(value < -100) value = -100;
+      if(value > -20) value = -20;
+      element.val(value);
+    });
+  }
+
+  return {
+    link:link
+  };
 })
 .controller('HomeController', function($scope, Meetings){
   //show all Meetings
