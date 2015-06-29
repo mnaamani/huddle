@@ -194,7 +194,10 @@ angular.module('huddle', [
 
         peerConnectionConfig: {
           iceServers: [{"url":"stun:www.mokhtar.net:3478"}]
-        }
+        },
+
+        //allows socket.io to reconnect to signaling server after disconnect from a meeting
+        socketio: { 'force new connection':true }
       });
 
       // we have to wait until it's ready
