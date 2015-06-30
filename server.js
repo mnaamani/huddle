@@ -139,9 +139,13 @@ function ensureAuthenticatedAPI(req, res, next) {
 }
 
 app.get('/api/whoami', ensureAuthenticatedAPI, function(req, res){
-  if(process.env.NODE_ENV === 'production') return res.status(200).send(req.user);
+  if(process.env.NODE_ENV === 'production') return res.status(200).send(req.user._json);
   res.status(200).send({
-    id: "U04NHL8BZ"
+    user_id: "U04NHL8BZ",
+    team_id: "T0455847Q",
+    team: "Hack Reactor Remote Beta",
+    url: "https://hrrb.slack.com/",
+    user: "mokhtar"
   });
 });
 

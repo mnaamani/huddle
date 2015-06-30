@@ -26,6 +26,10 @@ angular.module('huddle', [
     // default for unknown routes
     .otherwise({redirectTo: '/'});
 })
+.controller('AppCtrl', function($scope, Whoami){
+  $scope.title = "Slick Meetings";
+  $scope.whoami = Whoami;
+})
 .factory('Team', function($http, $q){
   var cache;
 
@@ -63,6 +67,20 @@ angular.module('huddle', [
   });
 
 })
+.factory('Whoami', function($http){
+  var whoami = {};
+
+  $http({
+    method: 'GET',
+    url: '/api/whoami'
+  }).then(function(response){
+    whoami.user = response.data.user;
+    whoami.team = response.data.team;
+    whoami.team_url = response.data.url;
+  });
+
+  return whoami;
+})
 .factory('Meetings', function($http) {
 
   var create = function(users){
@@ -71,7 +89,6 @@ angular.module('huddle', [
       url: '/api/meetings/new',
       data: users
     }).then(function(response){
-      console.log('got response to meeting', response.data);
       return response.data;
     });
   }
