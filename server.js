@@ -139,7 +139,10 @@ function ensureAuthenticatedAPI(req, res, next) {
 }
 
 app.get('/api/whoami', ensureAuthenticatedAPI, function(req, res){
-  response.send(200, req.user);
+  if(process.env.NODE_ENV === 'production') return res.status(200).send(req.user);
+  res.status(200).send({
+    id: "U04NHL8BZ"
+  });
 });
 
 //proxying api calls to slack
@@ -210,11 +213,11 @@ app.post('/api/meetings/new', ensureAuthenticatedAPI, function(req, res){
   }, function(err, huddle) {
     if(err) {
       console.log(err);
-      res.send(500);
+      res.status(500).end();
     } else {
 
       //sendInvites(req, req.body.invited, huddle._id);
-      res.send(201, huddle);
+      res.status(201).send(huddle);
     }
   });
 
@@ -227,9 +230,9 @@ app.get('/api/meetings/list', ensureAuthenticatedAPI, function(req, res){
   Meeting.find({'invited': userId })
     .exec(function(err, results) {
       if(err) {
-        res.send(500);
+        res.status(500).end();
       } else {
-        res.send(200, results);
+        res.status(200).send(results);
       }
     });
 
@@ -237,7 +240,7 @@ app.get('/api/meetings/list', ensureAuthenticatedAPI, function(req, res){
 
 app.post('/api/meetings/control/:id', ensureAuthenticatedAPI, function(req, res){
   //verify owner of meeting is issueing control commands
-  res.send(201,{
+  res.status(201).send({
     id: '77777'
   });
 });
@@ -253,11 +256,11 @@ app.get('/api/meetings/info/:id', ensureAuthenticatedAPI, function(req, res){
   Meeting.findOne({_id: meetingId})
     .exec(function(err, meeting){
       if(err) {
-        res.send(404);
+        res.status(404).end();
       } else {
 
         if(!_.contains(meeting.invited, userId ) && meeting.admin !== userId ){
-          return res.send(401);//access denied
+          return res.status(401).end();//access denied
         } else if(!_.contains(meeting.joined, userId)){
           meeting.joined.push(userId);
           meeting.save(function(err, meeting){
