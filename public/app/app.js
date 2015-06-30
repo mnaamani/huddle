@@ -100,7 +100,6 @@ angular.module('huddle', [
       method: 'GET',
       url: '/api/meetings/list'
     }).then(function(response){
-      console.log('got list of huddles', response.data);
       return response.data;
     });
   }
@@ -266,7 +265,7 @@ angular.module('huddle', [
 
       webrtc.on("volumeChange", function(volume, threshold){
         $scope.localVolume = volume;
-        $scope.$apply();
+        //$scope.$apply();
       });
 
       webrtc.on('remoteVolumeChange', function (peer, volume) {
