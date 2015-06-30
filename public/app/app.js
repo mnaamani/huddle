@@ -77,6 +77,8 @@ angular.module('huddle', [
     whoami.user = response.data.user;
     whoami.team = response.data.team;
     whoami.team_url = response.data.url;
+    whoami.user_id = response.data.user_id;
+    whoami.team_id = response.data.team_id;
   });
 
   return whoami;
@@ -171,33 +173,30 @@ angular.module('huddle', [
   };
 
 })
-.controller('MeetingController', function($scope,$routeParams, Meetings, Team){
+.controller('MeetingController', function($scope,$routeParams, Meetings, Team, Whoami){
   $scope.info = {};
 
   $scope.status = "joining meeting...";
 
   $scope.users = [];
+  $scope.remoteSessions = [];
 
   $scope.meetingId = $routeParams.id;
 
-  var updateInterval;
   var webrtc;
 
   Meetings.info($scope.meetingId).then(function(info){
     $scope.status = "";
     $scope.info = info;
-    $scope.remoteSessions = [];
 
     Team.info().then(function(){
       info.invited.forEach(function(id){
         var user = Team.userInfo(id);
         if(user) {
+          if(user.id === Whoami.user_id) user.present = true;
           $scope.users.push(user);
         }
       });
-
-      updateInterval = setInterval(refresh, 5000);
-      refresh();
 
       webrtc = new SimpleWebRTC({
         // the id/element dom element that will hold "our" video
@@ -214,7 +213,9 @@ angular.module('huddle', [
         },
 
         //allows socket.io to reconnect to signaling server after disconnect from a meeting
-        socketio: { 'force new connection':true }
+        socketio: { 'force new connection':true },
+
+        nick: Whoami.user_id
       });
 
       // we have to wait until it's ready
@@ -224,6 +225,7 @@ angular.module('huddle', [
       });
 
       webrtc.on('videoAdded', function (video, peer) {
+          var userId = peer.nick;
           // suppress contextmenu
           video.oncontextmenu = function () { return false; };
           $scope.remoteSessions.push({
@@ -231,20 +233,40 @@ angular.module('huddle', [
             video: video,
             peer: peer
           });
+
+          $scope.users.forEach(function(user){
+            if(user.id === userId) {
+              user.present = true;
+            }
+          });
+
+          console.log(peer.nick,"joined");
+          $scope.$apply();
       });
 
       webrtc.on('videoRemoved', function (video, peer) {
           var id = webrtc.getDomId(peer);
+          var userId = peer.nick;
           var ix = _.findIndex($scope.remoteSessions, function(session){
             return session.id === id;
           });
           if(ix !== -1){
             $scope.remoteSessions.splice(ix, 1);
           }
+
+          $scope.users.forEach(function(user){
+            if(user.id === userId) {
+              user.present = false;
+            }
+          });
+
+          $scope.$apply();
+          console.log(peer.nick,"left");
       });
 
       webrtc.on("volumeChange", function(volume, threshold){
         $scope.localVolume = volume;
+        $scope.$apply();
       });
 
       webrtc.on('remoteVolumeChange', function (peer, volume) {
@@ -255,6 +277,7 @@ angular.module('huddle', [
         if(ix !== -1){
           $scope.remoteSessions[ix].volume = volume;
         }
+        $scope.$apply();
       });
       $scope.muteAudio = function(){
         webrtc.mute();
@@ -278,26 +301,15 @@ angular.module('huddle', [
     $scope.status = "There was an error joining the meeting...";
   });
 
-  function refresh(){
-    Meetings.info($scope.meetingId).then(function(info){
-      $scope.info = info;
-      $scope.users.forEach(function(user){
-        if(_.contains(info.joined, user.id )){
-          user.present = true;
-        }
-      });
-    });
-  }
-
   $scope.$on("$destroy", function(){
-    clearInterval(updateInterval);
     if(webrtc) {
       webrtc.stopLocalVideo();
       webrtc.leaveRoom();
       webrtc.disconnect();
     }
-    $scope.users = [];
+    $scope.remoteSessions = [];
   });
+
 })
 .directive("remoteSession", function(){
 
@@ -328,6 +340,7 @@ angular.module('huddle', [
                 state.text('Connection closed.');
                 break;
             }
+            scope.$apply();
         });
       }
 
