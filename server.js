@@ -114,10 +114,6 @@ app.get('/join/:id', function(req, res){
 });
 
 function ensureAuthenticated(req, res, next) {
-  if(process.env.NODE_ENV !== 'production'){
-    return next();
-  }
-
   if (req.isAuthenticated()) { return next(); }
 
   if(req.method === 'GET') {
@@ -130,29 +126,18 @@ function ensureAuthenticated(req, res, next) {
 }
 
 function ensureAuthenticatedAPI(req, res, next) {
-  if(process.env.NODE_ENV !== 'production'){
-    return next();
-  }
-
   if (req.isAuthenticated()) { return next(); }
   res.status(401).end();//unauthorized
 }
 
 app.get('/api/whoami', ensureAuthenticatedAPI, function(req, res){
-  if(process.env.NODE_ENV === 'production') return res.status(200).send(req.user._json);
-  res.status(200).send({
-    user_id: "U04NHL8BZ",
-    team_id: "T0455847Q",
-    team: "Hack Reactor Remote Beta",
-    url: "https://hrrb.slack.com/",
-    user: "mokhtar"
-  });
+  return res.status(200).send(req.user._json);
 });
 
 //proxying api calls to slack
 app.get('/api/team/list', ensureAuthenticatedAPI, function(req, res){
 
-  var token = process.env.NODE_ENV === 'production' ? req.user.slackAccessToken : SLACK_SECRETS.token;
+  var token = req.user.slackAccessToken;
   var slack = slackAPI.getClient(token);
 
   slack.api('users.list', function(err, response) {
@@ -172,7 +157,7 @@ function sendInvites(req, users, meetingId, channelId) {
   //url to meeting
   //title
 
-  var token = process.env.NODE_ENV === 'production' ? req.user.slackAccessToken : SLACK_SECRETS.token;
+  var token = req.user.slackAccessToken;
   var slack = slackAPI.getClient(token);
 
   slack.api('users.list', function(err, response) {
@@ -207,7 +192,7 @@ app.post('/api/meetings/new', ensureAuthenticatedAPI, function(req, res){
   console.log('creating new meeting for:', req.body)
 
   //todo make sure to include creator in invited array
-  var userId = process.env.NODE_ENV === 'production' ? req.user.id : "U04NHL8BZ";
+  var userId = req.user.id;
 
   Meeting.create({
     title: req.body.title,
@@ -229,7 +214,7 @@ app.post('/api/meetings/new', ensureAuthenticatedAPI, function(req, res){
 
 app.get('/api/meetings/list', ensureAuthenticatedAPI, function(req, res){
 
-  var userId = process.env.NODE_ENV === 'production' ? req.user.id : "U04NHL8BZ";
+  var userId = req.user.id;
 
   Meeting.find({'invited': userId })
     .exec(function(err, results) {
@@ -254,7 +239,7 @@ app.get('/api/meetings/info/:id', ensureAuthenticatedAPI, function(req, res){
   //verify that user is authorised
   //set user presence 'in meeting'
   //send back latest meeting status info
-  var userId = process.env.NODE_ENV === 'production' ? req.user.id : "U04NHL8BZ";
+  var userId = req.user.id;
   var meetingId = req.params.id;
 
   Meeting.findOne({_id: meetingId})
