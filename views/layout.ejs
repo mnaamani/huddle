@@ -4,14 +4,13 @@
     <meta charset="utf-8" />
     <title>Huddle</title>
     <link rel="stylesheet" type="text/css" href="/style.css">
-
+    <script src="lib/jquery.js"></script>
   </head>
 
   <body ng-app='huddle' ng-controller='AppCtrl'>
     <h3>{{ title }}  {{ whoami.team }} (@{{ whoami.user}})</h3>
     <%- body %>
 
-    <script src="lib/jquery.js"></script>
     <script src="lib/angular/angular.js"></script>
     <script src="lib/angular-route/angular-route.js"></script>
     <script src="lib/underscore.js"></script>
