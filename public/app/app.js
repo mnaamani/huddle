@@ -265,7 +265,9 @@ angular.module('huddle', [
 
       webrtc.on("volumeChange", function(volume, threshold){
         $scope.localVolume = volume;
-        //$scope.$apply();
+        if(!$scope.$$phase) {
+          $scope.$apply();
+        }
       });
 
       webrtc.on('remoteVolumeChange', function (peer, volume) {
