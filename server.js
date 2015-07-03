@@ -92,6 +92,7 @@ app.get('/auth/slack/callback',
   function(req, res) {
     if(req.session._join_meeting){
       res.redirect('/join/'+req.session._join_meeting);
+      delete req.session._join_meeting;
     }else {
       res.redirect('/');
     }
@@ -117,8 +118,6 @@ function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
 
   if(req.method === 'GET') {
-    //TODO remember if user was trying to join a specific meeting, to send them to
-    //it when they authenticate successfully
     res.redirect('/login');
   } else{
     res.status(401).end();//unauthorized
@@ -171,7 +170,7 @@ function sendInvites(req, users, meetingId, channelId) {
       return "@"+user.name;
     }).join(" ");
 
-    message = "Huddle Up! >> http://huddleup.azurewebsites.net/#/meeting/"+meetingId+" "+names;
+    message = "Huddle Up! >> http://huddleup.azurewebsites.net/join/"+meetingId+" "+names;
 
     slack.api('chat.postMessage', {
         channel: 'C04GY38CA', //HRR6 channel
@@ -189,22 +188,24 @@ function sendInvites(req, users, meetingId, channelId) {
 }
 
 app.post('/api/meetings/new', ensureAuthenticatedAPI, function(req, res){
-  console.log('creating new meeting for:', req.body)
+  var userId = req.user.id;
+  var meeting = req.body;
 
   //todo make sure to include creator in invited array
-  var userId = req.user.id;
+  if (!_.contains(meeting.invited, userId)) {
+    meeting.invited.push(userId);
+  }
 
   Meeting.create({
-    title: req.body.title,
+    title: meeting.title,
     admin: userId,
-    invited: req.body.invited,
-    ended: false
+    invited: meeting.invited,
+    public: !!meeting.public
   }, function(err, huddle) {
     if(err) {
       console.log(err);
       res.status(500).end();
     } else {
-
       //sendInvites(req, req.body.invited, huddle._id);
       res.status(201).send(huddle);
     }
@@ -227,42 +228,21 @@ app.get('/api/meetings/list', ensureAuthenticatedAPI, function(req, res){
 
 });
 
-app.post('/api/meetings/control/:id', ensureAuthenticatedAPI, function(req, res){
-  //verify owner of meeting is issueing control commands
-  res.status(201).send({
-    id: '77777'
-  });
-});
-
 app.get('/api/meetings/info/:id', ensureAuthenticatedAPI, function(req, res){
   //retreive meeting info from database
   //verify that user is authorised
-  //set user presence 'in meeting'
-  //send back latest meeting status info
+  //send back meeting info
   var userId = req.user.id;
   var meetingId = req.params.id;
 
   Meeting.findOne({_id: meetingId})
     .exec(function(err, meeting){
-      if(err) {
-        res.status(404).end();
-      } else {
-
-        if(!_.contains(meeting.invited, userId ) && meeting.admin !== userId ){
-          return res.status(401).end();//access denied
-        } else if(!_.contains(meeting.joined, userId)){
-          meeting.joined.push(userId);
-          meeting.save(function(err, meeting){
-            res.send(meeting);
-          });
-        } else {
-          res.send(meeting);
-        }
-
-
+      if(err) return res.status(404).end();
+      if(meeting.public || meeting.admin === userId || _.contains(meeting.invited, userId)){
+        return res.send(meeting);
       }
+      return res.status(401).end();//access denied
     });
-
 });
 
 //start the server
