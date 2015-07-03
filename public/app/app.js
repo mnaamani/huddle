@@ -15,10 +15,6 @@ angular.module('huddle', [
       templateUrl: 'app/templates/new-meeting.html',
       controller: 'NewMeetingController'
     })
-    .when('/groups', {
-      templateUrl: 'app/templates/groups.html',
-      controller: 'GroupsController'
-    })
     .when('/team', {
       templateUrl: 'app/templates/team.html',
       controller: 'TeamController'
