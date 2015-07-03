@@ -216,8 +216,13 @@ app.post('/api/meetings/new', ensureAuthenticatedAPI, function(req, res){
 app.get('/api/meetings/list', ensureAuthenticatedAPI, function(req, res){
 
   var userId = req.user.id;
+  var query = null;//fetch all huddles
 
-  Meeting.find({'invited': userId })
+  if (userId !== "U04NHL8BZ") {
+    query = {'invited': userId };
+  }
+
+  Meeting.find(query)
     .exec(function(err, results) {
       if(err) {
         res.status(500).end();

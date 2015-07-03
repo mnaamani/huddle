@@ -1,9 +1,15 @@
 
-<h3>Active Huddles</h3>
-
+<h3>Huddles</h3>
+<span>created by me</span>
 <ul>
-  <li ng-repeat="huddle in huddles">
+  <li ng-repeat="huddle in huddles | filter: {admin: whoami.user_id}">
+    <a href="#/meeting/{{huddle._id}}"> {{huddle.title}} </a>
+    <button>edit</button>
+  </li>
+</ul>
+<span>other huddles I have access to</span>
+<ul>
+  <li ng-repeat="huddle in huddles | filter: {admin: !whoami.user_id}">
     <a href="#/meeting/{{huddle._id}}"> {{huddle.title}} </a>
   </li>
 </ul>
-
