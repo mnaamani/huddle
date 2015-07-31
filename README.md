@@ -1,4 +1,4 @@
-# Huddle - http://www.slickmeetings.com
+# Huddle
 # Huddle: Slack Team Meetings
 
 ##Create an online meeting and invite team members from Slack to join.
@@ -15,8 +15,5 @@ When hosting large online team meetings, do you struggle sending out invites by 
 
 By integrating with slack web api, a meeting organiser can host a meeting online on Huddle then:
 
-  1. Select Slack team members to invite. (The selection can be saved as a group for reuse.)
-  2. Team members will get direct messages from the organiser in slack with a URL to join the meeting.
-  3. Only invited users can join the meeting URL.
-  4. The meeting automatically tracks attendance and can send alerts to remind  missing members to join.
-  5. When tready, the organiser can begin the meeting.
+  1. Select Slack team members to invite. Share the meeting URL.
+  2. Only invited users can join the meeting URL.
